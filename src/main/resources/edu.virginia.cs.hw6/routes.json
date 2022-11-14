@@ -1,0 +1,283 @@
+{
+  "routes": [
+    {
+      "agency_id": 347,
+      "bounds": [
+        38.031599,
+        -78.508578,
+        38.130205,
+        -78.436039
+      ],
+      "color": "F15A29",
+      "description": "",
+      "id": 4013468,
+      "is_active": true,
+      "long_name": "29 North CONNECT",
+      "short_name": "29N",
+      "text_color": "FFFFFF",
+      "type": "bus",
+      "url": ""
+    },
+    {
+      "agency_id": 347,
+      "bounds": [
+        37.544322,
+        -78.514674,
+        38.031301,
+        -78.438473
+      ],
+      "color": "7267FF",
+      "description": "",
+      "id": 4013470,
+      "is_active": true,
+      "long_name": "Buckingham East CONNECT",
+      "short_name": "BUCK-E",
+      "text_color": "FFFFFF",
+      "type": "bus",
+      "url": ""
+    },
+    {
+      "agency_id": 347,
+      "bounds": [
+        37.544322,
+        -78.585817,
+        38.07436,
+        -78.473779
+      ],
+      "color": "A540FF",
+      "description": "",
+      "id": 4013472,
+      "is_active": true,
+      "long_name": "Buckingham North CONNECT",
+      "short_name": "BUCK-N",
+      "text_color": "FFFFFF",
+      "type": "bus",
+      "url": ""
+    },
+    {
+      "agency_id": 347,
+      "bounds": [
+        37.750511,
+        -78.879282,
+        38.032586,
+        -78.472787
+      ],
+      "color": "e50095",
+      "description": "",
+      "id": 4013478,
+      "is_active": true,
+      "long_name": "Lovingston CONNECT",
+      "short_name": "LOVE",
+      "text_color": "FFFFFF",
+      "type": "bus",
+      "url": ""
+    },
+    {
+      "agency_id": 347,
+      "bounds": [
+        38.031257,
+        -78.509224,
+        38.041401,
+        -78.4980769737139
+      ],
+      "color": "2849ed",
+      "description": "",
+      "id": 4013576,
+      "is_active": true,
+      "long_name": "Blueline",
+      "short_name": "BLUE",
+      "text_color": "FFFFFF",
+      "type": "bus",
+      "url": ""
+    },
+    {
+      "agency_id": 347,
+      "bounds": [
+        38.029557,
+        -78.514843,
+        38.032554,
+        -78.4980769737139
+      ],
+      "color": "ff002e",
+      "description": "",
+      "id": 4013582,
+      "is_active": false,
+      "long_name": "Redline",
+      "short_name": "RED",
+      "text_color": "FFFFFF",
+      "type": "bus",
+      "url": ""
+    },
+    {
+      "agency_id": 347,
+      "bounds": [
+        38.031599,
+        -78.71744,
+        38.070638,
+        -78.484879
+      ],
+      "color": "35469E",
+      "description": "",
+      "id": 4013640,
+      "is_active": true,
+      "long_name": "Crozet CONNECT Loop",
+      "short_name": "CROZ-L",
+      "text_color": "FFFFFF",
+      "type": "bus",
+      "url": ""
+    },
+    {
+      "agency_id": 347,
+      "bounds": [
+        38.0321088760668,
+        -78.514117,
+        38.045833,
+        -78.505573
+      ],
+      "color": "7a7575",
+      "description": "",
+      "id": 4013968,
+      "is_active": true,
+      "long_name": "Silver Line",
+      "short_name": "SLV",
+      "text_color": "FFFFFF",
+      "type": "bus",
+      "url": ""
+    },
+    {
+      "agency_id": 347,
+      "bounds": [
+        38.0285982,
+        -78.519591,
+        38.041785,
+        -78.491635
+      ],
+      "color": "0c8103",
+      "description": "",
+      "id": 4013970,
+      "is_active": true,
+      "long_name": "Green Line",
+      "short_name": "GRN",
+      "text_color": "000000",
+      "type": "bus",
+      "url": ""
+    },
+    {
+      "agency_id": 347,
+      "bounds": [
+        38.0285982,
+        -78.519591,
+        38.052025,
+        -78.5047036180968
+      ],
+      "color": "ffd700",
+      "description": "",
+      "id": 4013972,
+      "is_active": true,
+      "long_name": "Gold Line",
+      "short_name": "GOLD",
+      "text_color": "000000",
+      "type": "bus",
+      "url": ""
+    },
+    {
+      "agency_id": 347,
+      "bounds": [
+        38.026107,
+        -78.516414,
+        38.041785,
+        -78.491635
+      ],
+      "color": "ff7300",
+      "description": "",
+      "id": 4013976,
+      "is_active": true,
+      "long_name": "Orange Line",
+      "short_name": "OR",
+      "text_color": "000000",
+      "type": "bus",
+      "url": ""
+    },
+    {
+      "agency_id": 347,
+      "bounds": null,
+      "color": "ff0000",
+      "description": "",
+      "id": 4014050,
+      "is_active": false,
+      "long_name": "Redline Express",
+      "short_name": "RDX",
+      "text_color": "000000",
+      "type": "bus",
+      "url": ""
+    },
+    {
+      "agency_id": 347,
+      "bounds": [
+        38.031599,
+        -78.698305,
+        38.069908,
+        -78.484879
+      ],
+      "color": "0FC464",
+      "description": "",
+      "id": 4014854,
+      "is_active": true,
+      "long_name": "Crozet East CONNECT",
+      "short_name": "CROZ-E",
+      "text_color": "000000",
+      "type": "bus",
+      "url": ""
+    },
+    {
+      "agency_id": 347,
+      "bounds": [
+        38.025824,
+        -78.71744,
+        38.070638,
+        -78.484879
+      ],
+      "color": "1D5131",
+      "description": "",
+      "id": 4014856,
+      "is_active": true,
+      "long_name": "Crozet West CONNECT",
+      "short_name": "CROZ-W",
+      "text_color": "FFFFFF",
+      "type": "bus",
+      "url": ""
+    },
+    {
+      "agency_id": 347,
+      "bounds": [
+        38.026406,
+        -78.5196665720098,
+        38.0366256117848,
+        -78.500844
+      ],
+      "color": "232d48",
+      "description": "",
+      "id": 4015720,
+      "is_active": false,
+      "long_name": "Night Pilot",
+      "short_name": "NP",
+      "text_color": "ffffff",
+      "type": "bus",
+      "url": ""
+    },
+    {
+      "agency_id": 347,
+      "bounds": null,
+      "color": "eaff4d",
+      "description": "",
+      "id": 4016204,
+      "is_active": false,
+      "long_name": "Madison-Preston Morning Hospital Shuttle",
+      "short_name": "MPHS",
+      "text_color": "000000",
+      "type": "bus",
+      "url": ""
+    }
+  ],
+  "success": true
+}
