@@ -6,6 +6,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 
 
+
 public class ConfigSingleton {
     private static final String configurationFileName = "config.json";
     private static ConfigSingleton instance;
@@ -56,7 +57,7 @@ public class ConfigSingleton {
             databaseName = o.getString("database");
         }
         catch (Exception e) {
-
+            e.printStackTrace();
         }
 
     }
