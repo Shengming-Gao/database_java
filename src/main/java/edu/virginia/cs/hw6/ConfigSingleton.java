@@ -39,9 +39,15 @@ public class ConfigSingleton {
 
     private void setFieldsFromJSON() {
         //TODO: Population the three fields from the config.json file
+//        This will be done by reading the config.json file in the resources folder and setting the values of the fields:
+//        busStopsURL (with the "stops" endpoint value)
+//        busLinesURL (with the "lines" endpoint value)
+//        databaseName (with the "database" value)
         try {
-            String fileName = "config.json";
-            BufferedReader br = new BufferedReader(new FileReader(fileName));
+            ClassLoader classLoader = getClass().getClassLoader();
+            String fileName = classLoader.getResource("edu.virginia.cs.hw6/" + configurationFileName).getFile();
+            FileReader fileReader = new FileReader(fileName);
+            BufferedReader br = new BufferedReader(fileReader);
             StringBuilder sb = new StringBuilder();
             String line = br.readLine();
             while (line != null) {
@@ -49,16 +55,25 @@ public class ConfigSingleton {
                 line = br.readLine();
             }
             String text = sb.toString();
-
             JSONObject o = new JSONObject(text);
-
-            busStopsURL = (String) o.get("stops");
-            busLinesURL = (String) o.get("lines");
+            JSONObject endpoints = o.getJSONObject("endpoints");
+            busStopsURL = endpoints.getString("stops");
+            busLinesURL = endpoints.getString("lines");
             databaseName = o.getString("database");
-        }
-        catch (Exception e) {
+            br.close();
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
     }
+
+    //create a main to run the file
+    public static void main(String[] args) {
+        ConfigSingleton config = ConfigSingleton.getInstance();
+        System.out.println(config.getBusStopsURL());
+        System.out.println(config.getBusLinesURL());
+        System.out.println(config.getDatabaseFilename());
+    }
+
+
 }

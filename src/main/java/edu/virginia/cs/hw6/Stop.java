@@ -2,7 +2,6 @@ package edu.virginia.cs.hw6;
 
 public class Stop {
     private int id;
-    private int code;
     private String name;
     private double latitude, longitude;
 
