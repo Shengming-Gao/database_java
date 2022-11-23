@@ -40,7 +40,7 @@ public class ConfigSingleton {
     private void setFieldsFromJSON() {
         //TODO: Population the three fields from the config.json file
         try {
-            String fileName = "config.json";
+            String fileName = "src/main/resources/edu.virginia.cs.hw6/config.json";
             BufferedReader br = new BufferedReader(new FileReader(fileName));
             StringBuilder sb = new StringBuilder();
             String line = br.readLine();
@@ -52,13 +52,16 @@ public class ConfigSingleton {
 
             JSONObject o = new JSONObject(text);
 
-            busStopsURL = (String) o.get("stops");
-            busLinesURL = (String) o.get("lines");
+            JSONObject endpoints = (JSONObject) o.get("endpoints");
+
+            busStopsURL = endpoints.getString("stops");
+            busLinesURL = endpoints.getString("lines");
             databaseName = o.getString("database");
         }
+
         catch (Exception e) {
+            // maybe alter the exception massage later.
             e.printStackTrace();
         }
-
     }
 }
