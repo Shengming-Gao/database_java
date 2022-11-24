@@ -6,7 +6,6 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 
 
-
 public class ConfigSingleton {
     private static final String configurationFileName = "config.json";
     private static ConfigSingleton instance;
@@ -64,16 +63,5 @@ public class ConfigSingleton {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
-
-    //create a main to run the file
-    public static void main(String[] args) {
-        ConfigSingleton config = ConfigSingleton.getInstance();
-        System.out.println(config.getBusStopsURL());
-        System.out.println(config.getBusLinesURL());
-        System.out.println(config.getDatabaseFilename());
-    }
-
-
 }
