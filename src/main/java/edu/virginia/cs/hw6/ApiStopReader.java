@@ -34,9 +34,7 @@ public class ApiStopReader implements StopReader {
         //that do not have a matching stop, simply "skip" that Stop, don't create a
         //Stop object for it, and don't add it to Routes
         try {
-            String jsonText = getJSONText();
-            JSONObject o = new JSONObject(jsonText);
-            JSONArray stops = o.getJSONArray("stops");
+            JSONArray stops = getStopsArrayFromstopsEndpoint();
             for (Object m : stops) {
                 if (m instanceof JSONObject) {
                     JSONObject stop = (JSONObject) m;
@@ -57,6 +55,13 @@ public class ApiStopReader implements StopReader {
             throw new RuntimeException(e);
         }
         return stopsList;
+    }
+
+    public JSONArray getStopsArrayFromstopsEndpoint() throws IOException {
+        String jsonText = getJSONText();
+        JSONObject o = new JSONObject(jsonText);
+        JSONArray stops = o.getJSONArray("stops");
+        return stops;
     }
 
     private String getJSONText() throws IOException {
@@ -80,6 +85,9 @@ public class ApiStopReader implements StopReader {
     public static void main(String[] args) {
         ApiStopReader asr = new ApiStopReader();
         asr.getStops();
+        for(Stop s : asr.stopsList) {
+            System.out.println(s.toString());
+        }
     }
 }
 
