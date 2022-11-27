@@ -49,22 +49,44 @@ public class DatabaseManagerImpl implements DatabaseManager {
             throw new RuntimeException(e);
         }
         try {
-            Statement statement1 = connection.createStatement();
-            //Create table in SQLite
-//            String stopsTable = "CREATE TABLE IF NOT EXISTS Stops (ID INTEGER PRIMARY KEY, Name VARCHAR(255), " +
-//                    "Latitude DOUBLE, Longitude DOUBLE)";
-            String stopsTable = "CREATE TABLE IF NOT EXISTS Stops (ID int(5) NOT NULL, Name VARCHAR(255) NOT NULL, " +
-                    "Latitude DOUBLE NOT NULL, Longitude DOUBLE NOT NULL, PRIMARY KEY (ID))";
-            statement1.executeUpdate(stopsTable);
-            //all the columns should have the not null constraint
-            String BusLinesTable = "CREATE TABLE IF NOT EXISTS BusLines (ID int NOT NULL PRIMARY KEY, IsActive BOOLEAN NOT NULL, " +
-                    "LongName VARCHAR(255) NOT NULL, ShortName VARCHAR(255) NOT NULL) ";
-            Statement statement2 = connection.createStatement();
-            statement2.executeUpdate(BusLinesTable);
+//            Statement statement1 = connection.createStatement();
+//            //Create table in SQLite
+////            String stopsTable = "CREATE TABLE IF NOT EXISTS Stops (ID INTEGER PRIMARY KEY, Name VARCHAR(255), " +
+////                    "Latitude DOUBLE, Longitude DOUBLE)";
+//            String stopsTable = "CREATE TABLE IF NOT EXISTS Stops (ID int(5) NOT NULL, Name VARCHAR(255) NOT NULL, " +
+//                    "Latitude DOUBLE NOT NULL, Longitude DOUBLE NOT NULL, PRIMARY KEY (ID))";
+//            statement1.executeUpdate(stopsTable);
+//            //all the columns should have the not null constraint
+//            String BusLinesTable = "CREATE TABLE IF NOT EXISTS BusLines (ID int NOT NULL PRIMARY KEY, IsActive BOOLEAN NOT NULL, " +
+//                    "LongName VARCHAR(255) NOT NULL, ShortName VARCHAR(255) NOT NULL) ";
+//            Statement statement2 = connection.createStatement();
+//            statement2.executeUpdate(BusLinesTable);
 
-            String RoutesTable = "CREATE TABLE IF NOT EXISTS Routes (ID  int NOT NULL AUTO_INCREMENT, BusLineID int, " +
-                    "StopID int, Order int, FOREIGN KEY (BusLineID) REFERENCES BusLines(ID) ON DELETE CASCADE, " +
-                    "FOREIGN KEY (StopID) REFERENCES Stops(ID) ON DELETE CASCADE, PRIMARY KEY (ID))";
+
+//            Routes: (related to the class Route.java)
+//            ID - INTEGER - Primary Key - autoincrement
+//            BusLineID - Foreign Key to BusLines.ID - on delete cascade
+//            StopID - Foreign Key to Stops.ID - on delete cascade
+//            Order - Integer - The order of the Stop (0 indexed)
+
+
+//            String RoutesTable = "CREATE TABLE IF NOT EXISTS Routes (ID INTEGER PRIMARY KEY NOT NULL," +
+//                    "BusLineID INTEGER NOT NULL, " +
+//                    "StopID INTEGER NOT NULL, " +
+//                    "Order INTEGER NOT NULL, " +
+//                    "FOREIGN KEY (BusLineID) REFERENCES BusLines(ID) ON DELETE CASCADE, " +
+//                    "FOREIGN KEY (StopID) REFERENCES Stops(ID) ON DELETE CASCADE)";
+
+            String RoutesTable = "CREATE TABLE IF NOT EXISTS Routes (ID int NOT NULL," +
+                    "BusLineID int NOT NULL," +
+                    "StopID int NOT NULL," +
+                    "\"Order\" int NOT NULL," +
+                    "FOREIGN KEY (BusLineID) REFERENCES BusLines(ID) ON DELETE CASCADE," +
+                    "FOREIGN KEY (StopID) REFERENCES Stops(ID) ON DELETE CASCADE," +
+                    "PRIMARY KEY (ID))";
+
+
+
             Statement statement3 = connection.createStatement();
             statement3.executeUpdate(RoutesTable);
         } catch (SQLException e) {

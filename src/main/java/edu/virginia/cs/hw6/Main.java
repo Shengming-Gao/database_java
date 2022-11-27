@@ -6,12 +6,12 @@ public class Main {
     public static void main(String[] args) {
         DatabaseManager dbm = new DatabaseManagerImpl();
         dbm.connect();
-      //  dbm.deleteTables();
+       // dbm.deleteTables();
         dbm.createTables();
         //test addStops
-        ApiStopReader asr = new ApiStopReader();
-        List<Stop> stopList = asr.getStops();
-        dbm.addStops(stopList);
+//        ApiStopReader asr = new ApiStopReader();
+//        List<Stop> stopList = asr.getStops();
+//        dbm.addStops(stopList);
         //test addBusLines
 //        ApiBusLineReader ablr = new ApiBusLineReader();
 //        List<BusLine> busLineList = ablr.getBusLines();
