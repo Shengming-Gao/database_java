@@ -1,5 +1,6 @@
 package edu.virginia.cs.hw6;
 
+import java.sql.SQLException;
 import java.util.List;
 
 public interface DatabaseManager {
