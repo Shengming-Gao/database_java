@@ -52,4 +52,12 @@ public class Stop {
         double longDiff = this.getLongitude() - other.getLongitude();
         return Math.sqrt((latDiff * latDiff) + (longDiff * longDiff));
     }
+
+    @Override
+    //toString method
+    public String toString() {
+        return "Stop [id=" + id + ", name=" + name + ", latitude=" + latitude + ", longitude=" + longitude + "]";
+    }
+
+
 }

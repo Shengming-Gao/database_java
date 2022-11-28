@@ -111,7 +111,7 @@ public class DatabaseManagerImpl implements DatabaseManager {
             String RoutesTable = "DELETE FROM Routes";
             Statement statement3 = connection.createStatement();
             statement3.executeUpdate(RoutesTable);
-        }catch(SQLException e) {
+        } catch (SQLException e) {
             throw new RuntimeException(e);
         }
 
@@ -129,15 +129,12 @@ public class DatabaseManagerImpl implements DatabaseManager {
         Statement statement = null;
         try {
             statement = connection.createStatement();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        String dropS = "drop table Stops";
-        try {
+            String dropS = "drop table Stops";
             statement.executeUpdate(dropS);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+
         String dropB = "drop table BusLines";
         try {
             statement.executeUpdate(dropB);
@@ -358,7 +355,6 @@ public class DatabaseManagerImpl implements DatabaseManager {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-
         return busLineList;
     }
 
@@ -411,7 +407,6 @@ public class DatabaseManagerImpl implements DatabaseManager {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-
     }
 
     @Override
@@ -504,8 +499,6 @@ public class DatabaseManagerImpl implements DatabaseManager {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-
-
     }
 
     @Override
@@ -517,14 +510,10 @@ public class DatabaseManagerImpl implements DatabaseManager {
          */
         //commit any changes
         try {
-            connection.commit();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        try {
             if (connection.isClosed()) {
                 throw new IllegalStateException("Manager hasn't connected yet");
             }
+            connection.close();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
