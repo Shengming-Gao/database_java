@@ -7,7 +7,6 @@ import java.sql.*;
 public class DatabaseManagerImpl implements DatabaseManager {
     private static final String DATABASE_PATH = "bus_stops.sqlite3";
     private Connection connection;
-
     ConfigSingleton config = ConfigSingleton.getInstance();
 
     @Override
@@ -49,18 +48,18 @@ public class DatabaseManagerImpl implements DatabaseManager {
             throw new RuntimeException(e);
         }
         try {
-//            Statement statement1 = connection.createStatement();
-//            //Create table in SQLite
-////            String stopsTable = "CREATE TABLE IF NOT EXISTS Stops (ID INTEGER PRIMARY KEY, Name VARCHAR(255), " +
-////                    "Latitude DOUBLE, Longitude DOUBLE)";
-//            String stopsTable = "CREATE TABLE IF NOT EXISTS Stops (ID int(5) NOT NULL, Name VARCHAR(255) NOT NULL, " +
-//                    "Latitude DOUBLE NOT NULL, Longitude DOUBLE NOT NULL, PRIMARY KEY (ID))";
-//            statement1.executeUpdate(stopsTable);
-//            //all the columns should have the not null constraint
-//            String BusLinesTable = "CREATE TABLE IF NOT EXISTS BusLines (ID int NOT NULL PRIMARY KEY, IsActive BOOLEAN NOT NULL, " +
-//                    "LongName VARCHAR(255) NOT NULL, ShortName VARCHAR(255) NOT NULL) ";
-//            Statement statement2 = connection.createStatement();
-//            statement2.executeUpdate(BusLinesTable);
+            Statement statement1 = connection.createStatement();
+            //Create table in SQLite
+//            String stopsTable = "CREATE TABLE IF NOT EXISTS Stops (ID INTEGER PRIMARY KEY, Name VARCHAR(255), " +
+//                    "Latitude DOUBLE, Longitude DOUBLE)";
+            String stopsTable = "CREATE TABLE IF NOT EXISTS Stops (ID int(5) NOT NULL, Name VARCHAR(255) NOT NULL, " +
+                    "Latitude DOUBLE NOT NULL, Longitude DOUBLE NOT NULL, PRIMARY KEY (ID))";
+            statement1.executeUpdate(stopsTable);
+            //all the columns should have the not null constraint
+            String BusLinesTable = "CREATE TABLE IF NOT EXISTS BusLines (ID int NOT NULL PRIMARY KEY, IsActive BOOLEAN NOT NULL, " +
+                    "LongName VARCHAR(255) NOT NULL, ShortName VARCHAR(255) NOT NULL) ";
+            Statement statement2 = connection.createStatement();
+            statement2.executeUpdate(BusLinesTable);
 
 
 //            Routes: (related to the class Route.java)
@@ -86,7 +85,6 @@ public class DatabaseManagerImpl implements DatabaseManager {
                     "PRIMARY KEY (ID))";
 
 
-
             Statement statement3 = connection.createStatement();
             statement3.executeUpdate(RoutesTable);
         } catch (SQLException e) {
@@ -96,11 +94,38 @@ public class DatabaseManagerImpl implements DatabaseManager {
 
     @Override
     public void clear() {
+        /**
+         * Empties all of the tables, but does not delete the tables. I.e.,
+         * the table structure is still there, but the data content is emptied.
+         *
+         * @throws IllegalStateException if the tables don't exist.
+         * @throws IllegalStateException if the Manager hasn't connected yet
+         */
+        try {
+            Statement statement1 = connection.createStatement();
+            String stopsTable = "DELETE FROM Stops";
+            statement1.executeUpdate(stopsTable);
+            String BusLinesTable = "DELETE FROM BusLines";
+            Statement statement2 = connection.createStatement();
+            statement2.executeUpdate(BusLinesTable);
+            String RoutesTable = "DELETE FROM Routes";
+            Statement statement3 = connection.createStatement();
+            statement3.executeUpdate(RoutesTable);
+        }catch(SQLException e) {
+            throw new RuntimeException(e);
+        }
 
     }
 
     @Override
     public void deleteTables() {
+        /**
+         * Deletes the tables Stops, BusLines, and Routes from the database. This
+         * removes both the data and the tables themselves.
+         *
+         * @throws IllegalStateException if the tables don't exist
+         * @throws IllegalStateException if the Manager hasn't connected yet
+         */
         Statement statement = null;
         try {
             statement = connection.createStatement();
@@ -113,6 +138,19 @@ public class DatabaseManagerImpl implements DatabaseManager {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+        String dropB = "drop table BusLines";
+        try {
+            statement.executeUpdate(dropB);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        String dropR = "drop table Routes";
+        try {
+            statement.executeUpdate(dropR);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     @Override
@@ -196,12 +234,80 @@ public class DatabaseManagerImpl implements DatabaseManager {
 
     @Override
     public Stop getStopByID(int id) {
-        return null;
+        /**
+         * Get a specific Stop by ID number;
+         *
+         * @throws IllegalStateException if Stops table doesn't exist
+         * @throws IllegalArgumentException if no Stop with given id found
+         * @throws IllegalStateException if the Manager hasn't connected yet
+         */
+        //select query to get the stop with the given id
+        Statement statement = null;
+        try {
+            statement = connection.createStatement();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        String sql = String.format("SELECT * FROM Stops WHERE ID = %d", id);
+        ResultSet resultSet = null;
+        try {
+            resultSet = statement.executeQuery(sql);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            if (resultSet.next()) {
+                int stopID = resultSet.getInt("ID");
+                String name = resultSet.getString("Name");
+                double latitude = resultSet.getDouble("Latitude");
+                double longitude = resultSet.getDouble("Longitude");
+                Stop stop = new Stop(stopID, name, latitude, longitude);
+                return stop;
+            } else {
+                throw new IllegalArgumentException("No Stop with given id found");
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public Stop getStopByName(String substring) {
-        return null;
+        /**
+         * Get a specific Stop by name.
+         *
+         * @throws IllegalStateException if Stops table doesn't exist
+         * @throws IllegalArgumentException if no Stop with given name found
+         * @throws IllegalStateException if the Manager hasn't connected yet
+         */
+        //select query to get the stop with the given name
+        Statement statement = null;
+        try {
+            statement = connection.createStatement();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        String sql = String.format("SELECT * FROM Stops WHERE Name = \"%s\"", substring);
+        ResultSet resultSet = null;
+        try {
+            resultSet = statement.executeQuery(sql);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            if (resultSet.next()) {
+                int id = resultSet.getInt("ID");
+                String name = resultSet.getString("Name");
+                double latitude = resultSet.getDouble("Latitude");
+                double longitude = resultSet.getDouble("Longitude");
+                Stop stop = new Stop(id, name, latitude, longitude);
+                return stop;
+            } else {
+                throw new IllegalArgumentException("No Stop with given name found");
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -266,18 +372,140 @@ public class DatabaseManagerImpl implements DatabaseManager {
          * @throws IllegalArgumentException if no BusLine with that id is found
          * @throws IllegalStateException if the Manager hasn't connected yet
          */
-        return null;
+        Statement statement = null;
+        try {
+            statement = connection.createStatement();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        String sql = String.format("SELECT * FROM BusLines WHERE ID = %d", id);
+        ResultSet resultSet = null;
+        try {
+            resultSet = statement.executeQuery(sql);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            if (resultSet.next()) {
+                int busLineID = resultSet.getInt("ID");
+                boolean isActive = resultSet.getBoolean("IsActive");
+                String longName = resultSet.getString("LongName");
+                String shortName = resultSet.getString("ShortName");
+                //get the route from the ApiBusLineReader
+                ApiBusLineReader apiBusLineReader = new ApiBusLineReader();
+                List<BusLine> list = apiBusLineReader.getBusLines();
+                //Loop through the list of bus lines and find the one with the given id
+                //store the route in a variable
+                Route route = null;
+                for (BusLine busLine : list) {
+                    if (busLine.getId() == busLineID) {
+                        route = busLine.getRoute();
+                    }
+                }
+
+                BusLine busLine = new BusLine(busLineID, isActive, longName, shortName, route);
+                return busLine;
+            } else {
+                throw new IllegalArgumentException("No BusLine with given id found");
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
 
     }
 
     @Override
     public BusLine getBusLineByLongName(String longName) {
-        return null;
+        /**
+         * Get a specific BusLine by its long name. The returned object must have
+         * a fully populated Route object (including all Stops on the route IN-ORDER)
+         *
+         * @throws IllegalStateException if BusLines doesn't exist OR is empty
+         * @throws IllegalArgumentException if no BusLine with that long name is found
+         * @throws IllegalStateException if the Manager hasn't connected yet
+         */
+        Statement statement = null;
+        try {
+            statement = connection.createStatement();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        String sql = String.format("SELECT * FROM BusLines WHERE LongName = \"%s\"", longName);
+        ResultSet resultSet = null;
+        try {
+            resultSet = statement.executeQuery(sql);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            if (resultSet.next()) {
+                int busLineID = resultSet.getInt("ID");
+                boolean isActive = resultSet.getBoolean("IsActive");
+                String shortName = resultSet.getString("ShortName");
+                //get the route from the ApiBusLineReader
+                ApiBusLineReader apiBusLineReader = new ApiBusLineReader();
+                List<BusLine> list = apiBusLineReader.getBusLines();
+                //Loop through the list of bus lines and find the one with the given id
+                //store the route in a variable
+                Route route = null;
+                for (BusLine busLine : list) {
+                    if (busLine.getId() == busLineID) {
+                        route = busLine.getRoute();
+                    }
+                }
+
+                BusLine busLine = new BusLine(busLineID, isActive, longName, shortName, route);
+                return busLine;
+            } else {
+                throw new IllegalArgumentException("No BusLine with given longName found");
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public BusLine getBusLineByShortName(String shortName) {
-        return null;
+        Statement statement = null;
+        try {
+            statement = connection.createStatement();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        String sql = String.format("SELECT * FROM BusLines WHERE shortName = \"%s\"", shortName);
+        ResultSet resultSet = null;
+        try {
+            resultSet = statement.executeQuery(sql);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            if (resultSet.next()) {
+                int busLineID = resultSet.getInt("ID");
+                boolean isActive = resultSet.getBoolean("IsActive");
+                String longName = resultSet.getString("LongName");
+                //get the route from the ApiBusLineReader
+                ApiBusLineReader apiBusLineReader = new ApiBusLineReader();
+                List<BusLine> list = apiBusLineReader.getBusLines();
+                //Loop through the list of bus lines and find the one with the given id
+                //store the route in a variable
+                Route route = null;
+                for (BusLine busLine : list) {
+                    if (busLine.getId() == busLineID) {
+                        route = busLine.getRoute();
+                    }
+                }
+
+                BusLine busLine = new BusLine(busLineID, isActive, longName, shortName, route);
+                return busLine;
+            } else {
+                throw new IllegalArgumentException("No BusLine with given shortName found");
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+
     }
 
     @Override
