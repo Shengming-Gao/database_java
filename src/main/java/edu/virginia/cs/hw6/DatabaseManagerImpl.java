@@ -316,15 +316,39 @@ public class DatabaseManagerImpl implements DatabaseManager {
             Statement statement = null;
             try {
                 statement = connection.createStatement();
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
-            try {
                 statement.executeUpdate(insertQuery);
+
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
         }
+        int count = 1;
+        //populate the Route table here, use a count variable to keep track of the order of the stops
+//        For example, imagine we had a BusLine with ID 100 with a Route:
+//        stopList =  [stopC, stopA, stopB]
+//        We would insert the following into the Route table:
+//        (100, stopC, 0), (100, stopA, 1), (100, stopB, 2)
+        for (BusLine busLine : busLineList) {
+            Route r = busLine.getRoute();
+
+            //Using the get(int index) method of the Route class, get the stops in the order they are in the Route
+            //and insert them into the Route table
+            for (int i = 0; i < r.size(); i++) {
+                Stop stop = r.get(i);
+                String insertQuery = String.format("INSERT INTO Routes (ID, BusLineID, StopID,\"Order\") " +
+                                "VALUES (%d, %d, %d, %d)",count, busLine.getId(), stop.getId(), i);
+                Statement statement = null;
+                try {
+                    statement = connection.createStatement();
+                    statement.executeUpdate(insertQuery);
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+                count++;
+            }
+
+        }
+
     }
 
     @Override

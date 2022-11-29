@@ -6,17 +6,17 @@ public class Main {
     public static void main(String[] args) {
         DatabaseManager dbm = new DatabaseManagerImpl();
         dbm.connect();
-        //dbm.deleteTables();
-//        dbm.createTables();
-//
-//        ApiStopReader asr = new ApiStopReader();
-//        List<Stop> stopList = asr.getStops();
-//        dbm.addStops(stopList);
-//
-//        ApiBusLineReader ablr = new ApiBusLineReader();
-//        List<BusLine> busLineList = ablr.getBusLines();
-//        dbm.addBusLines(busLineList);
-//
+        dbm.deleteTables();
+        dbm.createTables();
+
+        ApiStopReader asr = new ApiStopReader();
+        List<Stop> stopList = asr.getStops();
+        dbm.addStops(stopList);
+
+        ApiBusLineReader ablr = new ApiBusLineReader();
+        List<BusLine> busLineList = ablr.getBusLines();
+        dbm.addBusLines(busLineList);
+
 //        List<Stop> allStops = dbm.getAllStops();
 //
 //        List<BusLine> allBusLines = dbm.getBusLines();
@@ -38,8 +38,8 @@ public class Main {
 //        System.out.println(busLine);
 
         //test getBusLinesByShortName
-        BusLine busLine = dbm.getBusLineByShortName("BUCK-N");
-        System.out.println(busLine);
+//        BusLine busLine = dbm.getBusLineByShortName("BUCK-N");
+//        System.out.println(busLine);
         dbm.disconnect();
     }
 }
