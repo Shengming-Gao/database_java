@@ -362,42 +362,84 @@ public class DatabaseManagerImpl implements DatabaseManager {
 //        if(connection == null || connection.isClosed() )  {
 //            throw new IllegalStateException("Error: manager is not connected. ");
 //        }
-        for (BusLine busLine : busLineList) {
-            String insertQuery = String.format("INSERT INTO BusLines (ID, IsActive, LongName, ShortName) " +
-                            "VALUES (%d, %b, \"%s\", \"%s\")", busLine.getId(), busLine.isActive(), busLine.getLongName(),
-                    busLine.getShortName());
-            Statement statement = null;
-            try {
-                statement = connection.createStatement();
-                statement.executeUpdate(insertQuery);
 
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
+        try {
+            if (connection == null || connection.isClosed()) {
+                throw new IllegalStateException("The Manager hasn't connected yet");
             }
-        }
-        int count = 1;
-        //populate the Route table here, use a count variable to keep track of the order of the stops
-//        For example, imagine we had a BusLine with ID 100 with a Route:
-//        stopList =  [stopC, stopA, stopB]
-//        We would insert the following into the Route table:
-//        (100, stopC, 0), (100, stopA, 1), (100, stopB, 2)
-        for (BusLine busLine : busLineList) {
-            Route r = busLine.getRoute();
-            //Using the get(int index) method of the Route class, get the stops in the order they are in the Route
-            //and insert them into the Route table
-            for (int i = 0; i < r.size(); i++) {
-                Stop stop = r.get(i);
-                String insertQuery = String.format("INSERT INTO Routes (ID, BusLineID, StopID,\"Order\") " +
-                        "VALUES (%d, %d, %d, %d)",null, busLine.getId(), stop.getId(), i);
+
+            ResultSet rs;
+            try {
+                Statement statement1 = connection.createStatement();
+                String sql1 = "SELECT * FROM Stops";
+                rs = statement1.executeQuery(sql1);
+            } catch(SQLException e){
+                throw new IllegalStateException("Stops table doesn't exist");
+            }
+            if (rs.isClosed()){
+                throw new IllegalStateException("Stops table is empty");
+            }
+
+            try {
+                Statement statement2 = connection.createStatement();
+                String sql1 = "SELECT * FROM Routes";
+                ResultSet rs1 = statement2.executeQuery(sql1);
+            } catch(SQLException e){
+                throw new IllegalStateException(" Routes table doesn't exist");
+            }
+
+            try {
+                Statement statement3 = connection.createStatement();
+                String sql1 = "SELECT * FROM BusLines";
+                ResultSet rs2 = statement3.executeQuery(sql1);
+            } catch(SQLException e){
+                throw new IllegalStateException("Busline table doesn't exist");
+            }
+
+
+
+
+            for (BusLine busLine : busLineList) {
+                //If adding a bus already exists and has a matching ID
+
+                String insertQuery = String.format("INSERT INTO BusLines (ID, IsActive, LongName, ShortName) " +
+                                "VALUES (%d, %b, \"%s\", \"%s\")", busLine.getId(), busLine.isActive(), busLine.getLongName(),
+                        busLine.getShortName());
                 Statement statement = null;
                 try {
                     statement = connection.createStatement();
                     statement.executeUpdate(insertQuery);
+
                 } catch (SQLException e) {
                     throw new RuntimeException(e);
                 }
-                count++;
             }
+            int count = 1;
+            //populate the Route table here, use a count variable to keep track of the order of the stops
+//        For example, imagine we had a BusLine with ID 100 with a Route:
+//        stopList =  [stopC, stopA, stopB]
+//        We would insert the following into the Route table:
+//        (100, stopC, 0), (100, stopA, 1), (100, stopB, 2)
+            for (BusLine busLine : busLineList) {
+                Route r = busLine.getRoute();
+                //Using the get(int index) method of the Route class, get the stops in the order they are in the Route
+                //and insert them into the Route table
+                for (int i = 0; i < r.size(); i++) {
+                    Stop stop = r.get(i);
+                    String insertQuery = String.format("INSERT INTO Routes (ID, BusLineID, StopID,\"Order\") " +
+                            "VALUES (%d, %d, %d, %d)", null, busLine.getId(), stop.getId(), i);
+                    Statement statement = null;
+                    try {
+                        statement = connection.createStatement();
+                        statement.executeUpdate(insertQuery);
+                    } catch (SQLException e) {
+                        throw new RuntimeException(e);
+                    }
+                    count++;
+                }
+            }
+        } catch (SQLException e){
+            throw new IllegalStateException(e);
         }
     }
 

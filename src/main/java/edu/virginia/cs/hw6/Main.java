@@ -29,7 +29,7 @@ public class Main {
 
 //       List<Stop> allStops = dbm.getAllStops();
 //
-//        List<BusLine> allBusLines = dbm.getBusLines();
+  //      List<BusLine> allBusLines = dbm.getBusLines();
 //
 //
        // Stop stop = dbm.getStopByID(4235106);
@@ -42,9 +42,9 @@ public class Main {
 //        System.out.println(stop);
 
 //        //test getBusLineByID
-       // BusLine busLine = dbm.getBusLineById(4013468);
-//        BusLine busLine = dbm.getBusLineById(4013);
-//        System.out.println(busLine);
+        //BusLine busLine = dbm.getBusLineById(4013468);
+        BusLine busLine = dbm.getBusLineById(4013);
+        System.out.println(busLine);
 //
 //        //test getBusLineByLongName
 //        BusLine busLine = dbm.getBusLineByLongName("29 north connect");
