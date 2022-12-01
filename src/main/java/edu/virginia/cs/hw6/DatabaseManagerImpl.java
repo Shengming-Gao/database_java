@@ -308,14 +308,22 @@ public class DatabaseManagerImpl implements DatabaseManager {
         //Loop through the list of stops and check if the name contains the substring using .contains()
         //If it does, return the stop wih the smallest ID number
         List<Stop> stopList = new ArrayList<>();
-        Statement statement = null;
+
         try {
-            statement = connection.createStatement();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        String sql = "SELECT * FROM Stops";
-        try {
+            if (connection == null || connection.isClosed()) {
+                throw new IllegalStateException("The Manager hasn't connected yet");
+            }
+
+            try {
+                Statement statement1 = connection.createStatement();
+                String sql1 = "SELECT * FROM Stops";
+                ResultSet rs = statement1.executeQuery(sql1);
+            } catch(SQLException e){
+                throw new IllegalStateException("Stops table doesn't exist");
+            }
+
+            Statement statement = connection.createStatement();
+            String sql = "SELECT * FROM Stops";
             ResultSet resultSet = statement.executeQuery(sql);
             while (resultSet.next()) {
                 int id = resultSet.getInt("ID");
@@ -333,10 +341,7 @@ public class DatabaseManagerImpl implements DatabaseManager {
                 return stop;
             }
         }
-        throw new IllegalArgumentException("No Stop with given name found");
-
-
-
+        throw new IllegalArgumentException("no Stop containing given subString found");
     }
 
     @Override
