@@ -42,31 +42,36 @@ public class DatabaseManagerImpl implements DatabaseManager {
      */
     @Override
     public void createTables() {
-        String databaseName = config.getDatabaseFilename();
-        String databaseUrl = "jdbc:sqlite:" + databaseName;
         try {
-            Class.forName("org.sqlite.JDBC");
-            Connection connection = DriverManager.getConnection(databaseUrl);
-        } catch (ClassNotFoundException | SQLException e) {
-            throw new RuntimeException(e);
-        }
-        try {
-            Statement statement1 = connection.createStatement();
-            //Create table in SQLite
+            if ( connection == null|| connection.isClosed()) {
+                throw new IllegalStateException("Connection is closed right now");
+            }
+
+            String databaseName = config.getDatabaseFilename();
+            String databaseUrl = "jdbc:sqlite:" + databaseName;
+            try {
+                Class.forName("org.sqlite.JDBC");
+                Connection connection = DriverManager.getConnection(databaseUrl);
+            } catch (ClassNotFoundException | SQLException e) {
+                throw new RuntimeException(e);
+            }
+            try {
+                Statement statement1 = connection.createStatement();
+                //Create table in SQLite
 //            String stopsTable = "CREATE TABLE IF NOT EXISTS Stops (ID INTEGER PRIMARY KEY, Name VARCHAR(255), " +
 //                    "Latitude DOUBLE, Longitude DOUBLE)";
-            String stopsTable = "CREATE TABLE IF NOT EXISTS Stops (ID int(5) NOT NULL, Name VARCHAR(255) NOT NULL, " +
-                    "Latitude DOUBLE NOT NULL, Longitude DOUBLE NOT NULL, PRIMARY KEY (ID))";
-            statement1.executeUpdate(stopsTable);
-            //all the columns should have the not null constraint
-            String BusLinesTable = "CREATE TABLE IF NOT EXISTS BusLines (ID int NOT NULL PRIMARY KEY, IsActive BOOLEAN NOT NULL, " +
-                    "LongName VARCHAR(255) NOT NULL, ShortName VARCHAR(255) NOT NULL) ";
-            Statement statement2 = connection.createStatement();
+                String stopsTable = "CREATE TABLE IF NOT EXISTS Stops (ID int(5) NOT NULL, Name VARCHAR(255) NOT NULL, " +
+                        "Latitude DOUBLE NOT NULL, Longitude DOUBLE NOT NULL, PRIMARY KEY (ID))";
+                statement1.executeUpdate(stopsTable);
+                //all the columns should have the not null constraint
+                String BusLinesTable = "CREATE TABLE IF NOT EXISTS BusLines (ID int NOT NULL PRIMARY KEY, IsActive BOOLEAN NOT NULL, " +
+                        "LongName VARCHAR(255) NOT NULL, ShortName VARCHAR(255) NOT NULL) ";
+                Statement statement2 = connection.createStatement();
 //            statement2.executeUpdate(BusLinesTable);
 
 
-            //Statement statement2 = connection.createStatement();
-            statement2.executeUpdate(BusLinesTable);
+                //Statement statement2 = connection.createStatement();
+                statement2.executeUpdate(BusLinesTable);
 
 
 //            Routes: (related to the class Route.java)
@@ -83,20 +88,24 @@ public class DatabaseManagerImpl implements DatabaseManager {
 //                    "FOREIGN KEY (BusLineID) REFERENCES BusLines(ID) ON DELETE CASCADE, " +
 //                    "FOREIGN KEY (StopID) REFERENCES Stops(ID) ON DELETE CASCADE)";
 
-            String RoutesTable = "CREATE TABLE Routes (ID INTEGER PRIMARY KEY, " +
-                    "BusLineID int NOT NULL," +
-                    "StopID int NOT NULL," +
-                    "\"Order\" int NOT NULL," +
-                    "FOREIGN KEY (BusLineID) REFERENCES BusLines(ID) ON DELETE CASCADE," +
-                    "FOREIGN KEY (StopID) REFERENCES Stops(ID) ON DELETE CASCADE)";
+                String RoutesTable = "CREATE TABLE Routes (ID INTEGER PRIMARY KEY, " +
+                        "BusLineID int NOT NULL," +
+                        "StopID int NOT NULL," +
+                        "\"Order\" int NOT NULL," +
+                        "FOREIGN KEY (BusLineID) REFERENCES BusLines(ID) ON DELETE CASCADE," +
+                        "FOREIGN KEY (StopID) REFERENCES Stops(ID) ON DELETE CASCADE)";
 
 
-            Statement statement3 = connection.createStatement();
-            statement3.executeUpdate(RoutesTable);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+                Statement statement3 = connection.createStatement();
+                statement3.executeUpdate(RoutesTable);
+            } catch (SQLException e) {
+                throw new IllegalArgumentException("The table already exist");
+            }
+        }catch (SQLException e){
+            throw new IllegalStateException(e);
         }
     }
+
 
     @Override
     public void clear() {
@@ -108,6 +117,9 @@ public class DatabaseManagerImpl implements DatabaseManager {
          * @throws IllegalStateException if the Manager hasn't connected yet
          */
         try {
+            if ( connection == null|| connection.isClosed()) {
+                throw new IllegalStateException("Connection is closed right now");
+            }
             Statement statement1 = connection.createStatement();
             String stopsTable = "DELETE FROM Stops";
             statement1.executeUpdate(stopsTable);
@@ -118,7 +130,7 @@ public class DatabaseManagerImpl implements DatabaseManager {
             Statement statement3 = connection.createStatement();
             statement3.executeUpdate(RoutesTable);
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException("The table doesn't exist");
         }
 
     }
@@ -134,26 +146,24 @@ public class DatabaseManagerImpl implements DatabaseManager {
          */
         Statement statement = null;
         try {
+            if (connection == null || connection.isClosed()) {
+                throw new IllegalStateException("Connection is closed right now");
+            }
             statement = connection.createStatement();
             String dropS = "drop table Stops";
             statement.executeUpdate(dropS);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
 
-        String dropB = "drop table BusLines";
-        try {
-            statement.executeUpdate(dropB);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        String dropR = "drop table Routes";
-        try {
-            statement.executeUpdate(dropR);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+            Statement statement1 = connection.createStatement();
+            String dropB = "drop table BusLines";
+            statement1.executeUpdate(dropB);
 
+            Statement statement2 = connection.createStatement();
+            String dropR = "drop table Routes";
+            statement2.executeUpdate(dropR);
+
+        }catch(SQLException e){
+            throw new IllegalStateException("The tables don't exist");
+        }
     }
 
     @Override
@@ -167,23 +177,23 @@ public class DatabaseManagerImpl implements DatabaseManager {
          * @throws IllegalStateException if the Manager hasn't connected yet
          */
         try {
-            if (connection.isClosed()) {
+            if (connection == null || connection.isClosed()) {
                 throw new IllegalStateException("The Manager hasn't connected yet");
             }
             //check if the table exists
             DatabaseMetaData dbm = connection.getMetaData();
             ResultSet tables = dbm.getTables(null, null, "Stops", null);
-            if (tables.next()) {
-                // Table exists
-                System.out.println("Stops table exists");
-            } else {
-                // Table does not exist
-                throw new IllegalStateException("Stops table doesn't exist");
-            }
             //insert query
             //Loop through the stopList and insert each stop into the database using String.format
             for (Stop stop : stopList) {
                 //check if the stop is already in the database
+                Statement statement1 = connection.createStatement();
+                String sql = String.format("Select * From Stops where ID = %d", stop.getId());
+                ResultSet rs = statement1.executeQuery(sql);
+                if (!rs.isClosed()){
+                    throw new IllegalArgumentException("you add a stop that is already in the database");
+                }
+
                 String insertQuery = String.format("INSERT INTO Stops (ID, Name, Latitude, Longitude) " +
                                 "VALUES (%d, \"%s\", %f, %f)", stop.getId(), stop.getName(),
                         stop.getLatitude(), stop.getLongitude());
@@ -191,7 +201,7 @@ public class DatabaseManagerImpl implements DatabaseManager {
                 statement.executeUpdate(insertQuery);
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException("Stops table does not exist");
         }
     }
 
@@ -205,11 +215,99 @@ public class DatabaseManagerImpl implements DatabaseManager {
          * @throws IllegalStateException if Stops doesn't exist
          * @throws IllegalStateException if the Manager hasn't connected yet
          */
-        //select query to get all the stops and return a list of stops
         List<Stop> stopList = new ArrayList<>();
+
+        try {
+            if (connection == null || connection.isClosed()) {
+                throw new IllegalStateException("The Manager hasn't connected yet");
+            }
+            //select query to get all the stops and return a list of stops
 //        if(connection.isClosed()) {
 //            throw new IllegalStateException("The Manager hasn't connected yet");
 //        }
+            Statement statement = connection.createStatement();
+
+            String sql = "SELECT * FROM Stops";
+            ResultSet resultSet = statement.executeQuery(sql);
+            while (resultSet.next()) {
+                int id = resultSet.getInt("ID");
+                String name = resultSet.getString("Name");
+                double latitude = resultSet.getDouble("Latitude");
+                double longitude = resultSet.getDouble("Longitude");
+                Stop stop = new Stop(id, name, latitude, longitude);
+                stopList.add(stop);
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("Stops Table doesn't exist");
+        }
+
+        return stopList;
+
+    }
+
+    @Override
+    public Stop getStopByID(int id) {
+        /**
+         * Get a specific Stop by ID number;
+         *
+         * @throws IllegalStateException if Stops table doesn't exist
+         * @throws IllegalArgumentException if no Stop with given id found
+         * @throws IllegalStateException if the Manager hasn't connected yet
+         */
+        //select query to get the stop with the given id
+        try {
+            if (connection == null || connection.isClosed()) {
+                throw new IllegalStateException("The Manager hasn't connected yet");
+            }
+            try {
+                Statement statement1 = connection.createStatement();
+                String sql2 = String.format("Select * from Stops");
+                ResultSet rs = statement1.executeQuery(sql2);
+            }catch (SQLException e) {
+                throw new IllegalStateException("Stops table does not exist");
+            }
+
+            Statement statement = connection.createStatement();
+            String sql = String.format("SELECT * FROM Stops WHERE ID = %d", id);
+            ResultSet resultSet = null;
+            resultSet = statement.executeQuery(sql);
+
+
+            if (resultSet.isClosed()) {
+                throw new IllegalArgumentException("No Stop with given id found");
+            }
+            if (resultSet.next()) {
+                int stopID = resultSet.getInt("ID");
+                String name = resultSet.getString("Name");
+                double latitude = resultSet.getDouble("Latitude");
+                double longitude = resultSet.getDouble("Longitude");
+                Stop stop = new Stop(stopID, name, latitude, longitude);
+                return stop;
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException(e);
+        }
+        return null;
+    }
+
+
+    @Override
+    public Stop getStopByName(String substring) {
+        /**
+         * Get a specific Stop by name.
+         /**
+         * Get a specific stop containing the substring.
+         *
+         * If multiple stops contain the substring, return the one with
+         * the smallest ID number.
+         * @throws IllegalStateException if Stops table doesn't exist
+         * @throws IllegalArgumentException if no Stop with given name found
+         * @throws IllegalStateException if the Manager hasn't connected yet
+         */
+        //Loop through the Stops table and stores the stops in a list of stops
+        //Loop through the list of stops and check if the name contains the substring using .contains()
+        //If it does, return the stop wih the smallest ID number
+        List<Stop> stopList = new ArrayList<>();
         Statement statement = null;
         try {
             statement = connection.createStatement();
@@ -230,97 +328,15 @@ public class DatabaseManagerImpl implements DatabaseManager {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-
-        return stopList;
-
-    }
-
-    @Override
-    public Stop getStopByID(int id) {
-        /**
-         * Get a specific Stop by ID number;
-         *
-         * @throws IllegalStateException if Stops table doesn't exist
-         * @throws IllegalArgumentException if no Stop with given id found
-         * @throws IllegalStateException if the Manager hasn't connected yet
-         */
-        //select query to get the stop with the given id
-        Statement statement = null;
-        try {
-            statement = connection.createStatement();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        String sql = String.format("SELECT * FROM Stops WHERE ID = %d", id);
-        ResultSet resultSet = null;
-        try {
-            resultSet = statement.executeQuery(sql);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        try {
-            if (resultSet.next()) {
-                int stopID = resultSet.getInt("ID");
-                String name = resultSet.getString("Name");
-                double latitude = resultSet.getDouble("Latitude");
-                double longitude = resultSet.getDouble("Longitude");
-                Stop stop = new Stop(stopID, name, latitude, longitude);
+        for (Stop stop : stopList) {
+            if (stop.getName().contains(substring)) {
                 return stop;
-            } else {
-                throw new IllegalArgumentException("No Stop with given id found");
             }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
         }
-    }
+        throw new IllegalArgumentException("No Stop with given name found");
 
-    @Override
-    public Stop getStopByName(String substring) {
-        /**
-         * Get a specific Stop by name.
-         *
-         * @throws IllegalStateException if Stops table doesn't exist
-         * @throws IllegalArgumentException if no Stop with given name found
-         * @throws IllegalStateException if the Manager hasn't connected yet
-         */
-        //select query to get the stop with the given name
-        Statement statement = null;
-        try {
-            statement = connection.createStatement();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
 
-        /**
-         * Get a specific stop containing the substring.
-         *
-         * If multiple stops contain the substring, return the one with
-         * the smallest ID number.
-         **/
 
-       // String sql = String.format("SELECT * FROM Stops WHERE Name LIKE \"%s\"", substring);
-        String sql
-
-        ResultSet resultSet = null;
-        try {
-            resultSet = statement.executeQuery(sql);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        try {
-            if (resultSet.next()) {
-                int id = resultSet.getInt("ID");
-                String name = resultSet.getString("Name");
-                double latitude = resultSet.getDouble("Latitude");
-                double longitude = resultSet.getDouble("Longitude");
-                Stop stop = new Stop(id, name, latitude, longitude);
-                return stop;
-            } else {
-                throw new IllegalArgumentException("No Stop with given name found");
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     @Override

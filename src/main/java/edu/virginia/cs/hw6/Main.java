@@ -6,32 +6,39 @@ public class Main {
     public static void main(String[] args) {
         DatabaseManager dbm = new DatabaseManagerImpl();
         dbm.connect();
-            //    dbm.deleteTables();
-       // dbm.createTables();
+//        dbm.connect();
+     //   dbm.createTables();
 
-       // dbm.clear();
+      // dbm.createTables();
+//        dbm.deleteTables();
+//        dbm.createTables();
+
+     //   dbm.clear();
 
 
-//        ApiStopReader asr = new ApiStopReader();
-//        List<Stop> stopList = asr.getStops();
-//        dbm.addStops(stopList);
-//
-//        ApiBusLineReader ablr = new ApiBusLineReader();
-//        List<BusLine> busLineList = ablr.getBusLines();
-//        dbm.addBusLines(busLineList);
+        ApiStopReader asr = new ApiStopReader();
+        List<Stop> stopList = asr.getStops();
+        dbm.addStops(stopList);
+        dbm.addStops(stopList);
 
-//        List<Stop> allStops = dbm.getAllStops();
+
+        ApiBusLineReader ablr = new ApiBusLineReader();
+        List<BusLine> busLineList = ablr.getBusLines();
+        dbm.addBusLines(busLineList);
+
+//       List<Stop> allStops = dbm.getAllStops();
 //
 //        List<BusLine> allBusLines = dbm.getBusLines();
 //
 //
-//        Stop stop = dbm.getStopByID(4235106);
-//        System.out.println(stop);
+       // Stop stop = dbm.getStopByID(4235106);
+        Stop stop = dbm.getStopByID(23);
+        System.out.println(stop);
 //
 //        test getStopByName
-        Stop stop = dbm.getStopByName("George Welsh Way @ Scott Stadium");
-        stop = dbm.getStopByName("George Welsh Way");
-        System.out.println(stop);
+//        Stop stop = dbm.getStopByName("George Welsh Way @ Scott Stadium");
+//        stop = dbm.getStopByName("George Welsh Way");
+//        System.out.println(stop);
 
 //        //test getBusLineByID
 //        BusLine busLine = dbm.getBusLineById(4013468);
@@ -42,8 +49,8 @@ public class Main {
 //        System.out.println(busLine);
 //
 //       // test getBusLinesByShortName
-        BusLine busLine = dbm.getBusLineByShortName("red");
-        System.out.println(busLine);
+//        BusLine busLine = dbm.getBusLineByShortName("red");
+//        System.out.println(busLine);
         dbm.disconnect();
     }
 }
