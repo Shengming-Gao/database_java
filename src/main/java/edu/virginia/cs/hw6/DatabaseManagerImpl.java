@@ -1,5 +1,6 @@
 package edu.virginia.cs.hw6;
 
+import javax.xml.transform.Result;
 import java.util.ArrayList;
 import java.util.List;
 import java.sql.*;
@@ -468,27 +469,35 @@ public class DatabaseManagerImpl implements DatabaseManager {
                 throw new IllegalStateException("Manager hasn't connected yet. ");
             }
             ResultSet resultSet;
-            try {
-            Statement statement = null;
-            statement = connection.createStatement();
-            String sql = String.format("SELECT * FROM BusLines WHERE LongName = \"%s\" COLLATE NOCASE", longName);
-            resultSet = statement.executeQuery(sql);
-           } catch(SQLException e){
-               throw new IllegalArgumentException("BusLines table does not exist ");
-           }
+            ResultSet rs;
+            try{
+                Statement statement = connection.createStatement();
+                String sql = String.format("SELECT * FROM BusLines");
+                rs = statement.executeQuery(sql);
+            }catch(SQLException e) {
+                throw new IllegalStateException("Busline Table doesn't exist");
+            }
+            if(rs.isClosed()){
+                throw new IllegalStateException("Busline Table is empty");
+            }
+                Statement statement1 = connection.createStatement();
+                String sql = String.format("SELECT * FROM BusLines WHERE LongName = \"%s\" COLLATE NOCASE", longName);
+                resultSet = statement1.executeQuery(sql);
+
             if(resultSet.isClosed()){
                 throw new IllegalStateException("no BusLine with that long name is found");
             }
 
         try {
             if (resultSet.next()) {
-                Statement statement =connection.createStatement();
+
+                Statement statement2 =connection.createStatement();
                 int ID = resultSet.getInt("ID");
                 boolean isActive = resultSet.getBoolean("IsActive");
                 String shortName = resultSet.getString("ShortName");
                //find the matched BusLineID in the Route table
                 String sql2 = String.format("SELECT * FROM Routes WHERE BusLineID = %d", ID);
-                ResultSet resultSet2 = statement.executeQuery(sql2);
+                ResultSet resultSet2 = statement2.executeQuery(sql2);
                 //create a new Route object and add the stops to it
                 Route route = new Route();
                 List<Stop> routeList = new ArrayList<>();
@@ -516,14 +525,10 @@ public class DatabaseManagerImpl implements DatabaseManager {
 
     @Override
     public BusLine getBusLineByShortName(String shortName) {
-        Statement statement = null;
-        try {
-            statement = connection.createStatement();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        Statement statement = connection.createStatement();
+
         String sql = String.format("SELECT * FROM BusLines WHERE shortName = \"%s\"", shortName);
-        ResultSet resultSet = null;
+        ResultSet resultSet;
         try {
             resultSet = statement.executeQuery(sql);
         } catch (SQLException e) {
