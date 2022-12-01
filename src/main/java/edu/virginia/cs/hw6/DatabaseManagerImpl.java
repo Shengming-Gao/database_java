@@ -430,15 +430,16 @@ public class DatabaseManagerImpl implements DatabaseManager {
                 String longName = resultSet.getString("LongName");
                 String shortName = resultSet.getString("ShortName");
                 //get the route from the ApiBusLineReader
-                ApiBusLineReader apiBusLineReader = new ApiBusLineReader();
-                List<BusLine> list = apiBusLineReader.getBusLines();
-                //Loop through the list of bus lines and find the one with the given id
-                //store the route in a variable
-                Route route = null;
-                for (BusLine busLine : list) {
-                    if (busLine.getId() == busLineID) {
-                        route = busLine.getRoute();
-                    }
+                String sql2 = String.format("SELECT * FROM Routes WHERE BusLineID = %d", busLineID);
+                ResultSet resultSet2 = statement.executeQuery(sql2);
+                //create a new Route object and add the stops to it
+                Route route = new Route();
+                List<Stop> routeList = new ArrayList<>();
+                while (resultSet2.next()) {
+                    //get the stops by calling getStopById
+                    int stopID = resultSet2.getInt("StopID");
+                    Stop stop = getStopByID(stopID);
+                    route.addStop(stop);
                 }
 
                 BusLine busLine = new BusLine(busLineID, isActive, longName, shortName, route);
@@ -462,18 +463,26 @@ public class DatabaseManagerImpl implements DatabaseManager {
          * @throws IllegalStateException if the Manager hasn't connected yet
          */
         try {
+
             if (connection == null || connection.isClosed()) {
                 throw new IllegalStateException("Manager hasn't connected yet. ");
             }
-
+            ResultSet resultSet;
+            try {
             Statement statement = null;
             statement = connection.createStatement();
             String sql = String.format("SELECT * FROM BusLines WHERE LongName = \"%s\" COLLATE NOCASE", longName);
-            ResultSet resultSet = null;
             resultSet = statement.executeQuery(sql);
-        } catc
+           } catch(SQLException e){
+               throw new IllegalArgumentException("BusLines table does not exist ");
+           }
+            if(resultSet.isClosed()){
+                throw new IllegalStateException("no BusLine with that long name is found");
+            }
+
         try {
             if (resultSet.next()) {
+                Statement statement =connection.createStatement();
                 int ID = resultSet.getInt("ID");
                 boolean isActive = resultSet.getBoolean("IsActive");
                 String shortName = resultSet.getString("ShortName");
@@ -500,7 +509,9 @@ public class DatabaseManagerImpl implements DatabaseManager {
             throw new RuntimeException(e);
         }
 
-
+    }catch (SQLException e) {
+        throw new RuntimeException(e);
+    }
     }
 
     @Override
@@ -523,16 +534,16 @@ public class DatabaseManagerImpl implements DatabaseManager {
                 int busLineID = resultSet.getInt("ID");
                 boolean isActive = resultSet.getBoolean("IsActive");
                 String longName = resultSet.getString("LongName");
-                //get the route from the ApiBusLineReader
-                ApiBusLineReader apiBusLineReader = new ApiBusLineReader();
-                List<BusLine> list = apiBusLineReader.getBusLines();
-                //Loop through the list of bus lines and find the one with the given id
-                //store the route in a variable
-                Route route = null;
-                for (BusLine busLine : list) {
-                    if (busLine.getId() == busLineID) {
-                        route = busLine.getRoute();
-                    }
+                String sql2 = String.format("SELECT * FROM Routes WHERE BusLineID = %d", busLineID);
+                ResultSet resultSet2 = statement.executeQuery(sql2);
+                //create a new Route object and add the stops to it
+                Route route = new Route();
+                List<Stop> routeList = new ArrayList<>();
+                while (resultSet2.next()) {
+                    //get the stops by calling getStopById
+                    int stopID = resultSet2.getInt("StopID");
+                    Stop stop = getStopByID(stopID);
+                    route.addStop(stop);
                 }
 
                 BusLine busLine = new BusLine(busLineID, isActive, longName, shortName, route);
