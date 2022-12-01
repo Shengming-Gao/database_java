@@ -290,7 +290,17 @@ public class DatabaseManagerImpl implements DatabaseManager {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        String sql = String.format("SELECT * FROM Stops WHERE Name = \"%s\"", substring);
+
+        /**
+         * Get a specific stop containing the substring.
+         *
+         * If multiple stops contain the substring, return the one with
+         * the smallest ID number.
+         **/
+
+       // String sql = String.format("SELECT * FROM Stops WHERE Name LIKE \"%s\"", substring);
+        String sql
+
         ResultSet resultSet = null;
         try {
             resultSet = statement.executeQuery(sql);
@@ -464,7 +474,6 @@ public class DatabaseManagerImpl implements DatabaseManager {
          * @throws IllegalStateException if the Manager hasn't connected yet
          */
         try {
-
             if (connection == null || connection.isClosed()) {
                 throw new IllegalStateException("Manager hasn't connected yet. ");
             }
@@ -525,36 +534,53 @@ public class DatabaseManagerImpl implements DatabaseManager {
 
     @Override
     public BusLine getBusLineByShortName(String shortName) {
-        Statement statement = connection.createStatement();
+        try {
+            if (connection == null || connection.isClosed()) {
+                throw new IllegalStateException("Manager hasn't connected yet. ");
+            }
+            ResultSet rs;
+            try{
+             Statement statement = connection.createStatement();
+             String sql = String.format("Select * from BusLines");
+             rs = statement.executeQuery(sql);
+            }catch(SQLException e){
+                throw new IllegalStateException("Busline Table doesn't exist");
+            }
+            if(rs.isClosed()){
+                throw new IllegalStateException("Busline Table is empty");
+            }
+            Statement statement1 = connection.createStatement();
+            String sql = String.format("SELECT * FROM BusLines WHERE shortName = \"%s\" COLLATE NOCASE", shortName);
+            ResultSet resultSet;
+            resultSet = statement1.executeQuery(sql);
+            if(resultSet.isClosed()){
+                throw new IllegalStateException("no Busline with short name is found");
+            }
 
-        String sql = String.format("SELECT * FROM BusLines WHERE shortName = \"%s\"", shortName);
-        ResultSet resultSet;
-        try {
-            resultSet = statement.executeQuery(sql);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        try {
-            if (resultSet.next()) {
-                int busLineID = resultSet.getInt("ID");
-                boolean isActive = resultSet.getBoolean("IsActive");
-                String longName = resultSet.getString("LongName");
-                String sql2 = String.format("SELECT * FROM Routes WHERE BusLineID = %d", busLineID);
-                ResultSet resultSet2 = statement.executeQuery(sql2);
-                //create a new Route object and add the stops to it
-                Route route = new Route();
-                List<Stop> routeList = new ArrayList<>();
-                while (resultSet2.next()) {
-                    //get the stops by calling getStopById
-                    int stopID = resultSet2.getInt("StopID");
-                    Stop stop = getStopByID(stopID);
-                    route.addStop(stop);
+            try {
+                if (resultSet.next()) {
+                    Statement statement2 = connection.createStatement();
+                    int busLineID = resultSet.getInt("ID");
+                    boolean isActive = resultSet.getBoolean("IsActive");
+                    String longName = resultSet.getString("LongName");
+                    String sql2 = String.format("SELECT * FROM Routes WHERE BusLineID = %d", busLineID);
+                    ResultSet resultSet2 = statement2.executeQuery(sql2);
+                    //create a new Route object and add the stops to it
+                    Route route = new Route();
+                    List<Stop> routeList = new ArrayList<>();
+                    while (resultSet2.next()) {
+                        //get the stops by calling getStopById
+                        int stopID = resultSet2.getInt("StopID");
+                        Stop stop = getStopByID(stopID);
+                        route.addStop(stop);
+                    }
+                    BusLine busLine = new BusLine(busLineID, isActive, longName, shortName, route);
+                    return busLine;
+                } else {
+                    throw new IllegalArgumentException("No BusLine with given shortName found");
                 }
-
-                BusLine busLine = new BusLine(busLineID, isActive, longName, shortName, route);
-                return busLine;
-            } else {
-                throw new IllegalArgumentException("No BusLine with given shortName found");
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
