@@ -9,22 +9,22 @@ public class Main {
 //        dbm.connect();
 //        dbm.createTables();
 
-       dbm.createTables();
-       // dbm.deleteTables();
-       // dbm.createTables();
+//       dbm.createTables();
+//        dbm.deleteTables();
+//        dbm.createTables();
 
-        dbm.clear();
+//        dbm.clear();
 
 
-//        ApiStopReader asr = new ApiStopReader();
-//        List<Stop> stopList = asr.getStops();
+        ApiStopReader asr = new ApiStopReader();
+        List<Stop> stopList = asr.getStops();
+        dbm.addStops(stopList);
 //        dbm.addStops(stopList);
-////        dbm.addStops(stopList);
+
 //
-////
-//        ApiBusLineReader ablr = new ApiBusLineReader();
-//        List<BusLine> busLineList = ablr.getBusLines();
-//        dbm.addBusLines(busLineList);
+        ApiBusLineReader ablr = new ApiBusLineReader();
+        List<BusLine> busLineList = ablr.getBusLines();
+        dbm.addBusLines(busLineList);
 
 
 //       List<Stop> allStops = dbm.getAllStops();
