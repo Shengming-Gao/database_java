@@ -9,33 +9,32 @@ public class Main {
 //        dbm.connect();
 //        dbm.createTables();
 
-      // dbm.createTables();
-        dbm.deleteTables();
-        dbm.createTables();
+       dbm.createTables();
+       // dbm.deleteTables();
+       // dbm.createTables();
 
-     //   dbm.clear();
+        dbm.clear();
 
 
-        ApiStopReader asr = new ApiStopReader();
-        List<Stop> stopList = asr.getStops();
-        dbm.addStops(stopList);
+//        ApiStopReader asr = new ApiStopReader();
+//        List<Stop> stopList = asr.getStops();
 //        dbm.addStops(stopList);
-
-
-        ApiBusLineReader ablr = new ApiBusLineReader();
-        List<BusLine> busLineList = ablr.getBusLines();
-        dbm.addBusLines(busLineList);
+////        dbm.addStops(stopList);
+//
+////
+//        ApiBusLineReader ablr = new ApiBusLineReader();
+//        List<BusLine> busLineList = ablr.getBusLines();
+//        dbm.addBusLines(busLineList);
 
 
 //       List<Stop> allStops = dbm.getAllStops();
-//
+
   //      List<BusLine> allBusLines = dbm.getBusLines();
-//
-//
+
        // Stop stop = dbm.getStopByID(4235106);
 //        Stop stop = dbm.getStopByID(23);
 //        System.out.println(stop);
-//
+
 //        test getStopByName
 //        Stop stop = dbm.getStopByName("George Welsh Way @ Scott Stadium");
 //        stop = dbm.getStopByName("r");
@@ -43,9 +42,9 @@ public class Main {
 
 //        //test getBusLineByID
         //BusLine busLine = dbm.getBusLineById(4013468);
-        BusLine busLine = dbm.getBusLineById(4013);
-        System.out.println(busLine);
-//
+//        BusLine busLine = dbm.getBusLineById(4013);
+//        System.out.println(busLine);
+
 //        //test getBusLineByLongName
 //        BusLine busLine = dbm.getBusLineByLongName("29 north connect");
 //        System.out.println(busLine);

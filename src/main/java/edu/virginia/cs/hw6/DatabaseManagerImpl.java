@@ -397,22 +397,25 @@ public class DatabaseManagerImpl implements DatabaseManager {
             }
 
 
-
-
             for (BusLine busLine : busLineList) {
                 //If adding a bus already exists and has a matching ID
 
-                String insertQuery = String.format("INSERT INTO BusLines (ID, IsActive, LongName, ShortName) " +
+                String sql2 = String.format("Select * from BusLines");
+                Statement statement3 = connection.createStatement();
+                ResultSet rs3 = statement3.executeQuery(sql2);
+
+                while (rs3.next()){
+                   int BusLine_ID = rs3.getInt("ID");
+                   if (busLine.getId() == BusLine_ID){
+                       throw new IllegalArgumentException("adding a bus that already exists, same ID");
+                   }
+                }
+
+                 String insertQuery = String.format("INSERT INTO BusLines (ID, IsActive, LongName, ShortName) " +
                                 "VALUES (%d, %b, \"%s\", \"%s\")", busLine.getId(), busLine.isActive(), busLine.getLongName(),
                         busLine.getShortName());
-                Statement statement = null;
-                try {
-                    statement = connection.createStatement();
+                    Statement statement = connection.createStatement();
                     statement.executeUpdate(insertQuery);
-
-                } catch (SQLException e) {
-                    throw new RuntimeException(e);
-                }
             }
             int count = 1;
             //populate the Route table here, use a count variable to keep track of the order of the stops
@@ -426,6 +429,7 @@ public class DatabaseManagerImpl implements DatabaseManager {
                 //and insert them into the Route table
                 for (int i = 0; i < r.size(); i++) {
                     Stop stop = r.get(i);
+
                     String insertQuery = String.format("INSERT INTO Routes (ID, BusLineID, StopID,\"Order\") " +
                             "VALUES (%d, %d, %d, %d)", null, busLine.getId(), stop.getId(), i);
                     Statement statement = null;
