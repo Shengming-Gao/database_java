@@ -388,7 +388,7 @@ public class DatabaseManagerImpl implements DatabaseManager {
             for (int i = 0; i < r.size(); i++) {
                 Stop stop = r.get(i);
                 String insertQuery = String.format("INSERT INTO Routes (ID, BusLineID, StopID,\"Order\") " +
-                                "VALUES (%d, %d, %d, %d)",null, busLine.getId(), stop.getId(), i);
+                        "VALUES (%d, %d, %d, %d)",null, busLine.getId(), stop.getId(), i);
                 Statement statement = null;
                 try {
                     statement = connection.createStatement();
@@ -401,6 +401,7 @@ public class DatabaseManagerImpl implements DatabaseManager {
         }
     }
 
+
     @Override
     public List<BusLine> getBusLines() {
         //select query to get all the stops and return a list of stops
@@ -408,28 +409,60 @@ public class DatabaseManagerImpl implements DatabaseManager {
 //        if(connection.isClosed()) {
 //            throw new IllegalStateException("The Manager hasn't connected yet");
 //        }
-        Statement statement = null;
-        try {
-            statement = connection.createStatement();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        String sql = "SELECT * FROM BusLines";
-        try {
-            ResultSet resultSet = statement.executeQuery(sql);
-            while (resultSet.next()) {
-                int id = resultSet.getInt("ID");
-                boolean isActive = resultSet.getBoolean("IsActive");
-                String longName = resultSet.getString("LongName");
-                String shortName = resultSet.getString("ShortName");
-                BusLine busLine = new BusLine(id, isActive, longName, shortName);
-                busLineList.add(busLine);
 
+        try {
+            if (connection == null || connection.isClosed()) {
+                throw new IllegalStateException("The Manager hasn't connected yet");
             }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+
+            Statement statement = connection.createStatement();
+
+
+            try {
+                Statement statement1 = connection.createStatement();
+                String sql1 = "SELECT * FROM Stops";
+                ResultSet rs = statement1.executeQuery(sql1);
+            } catch(SQLException e){
+                throw new IllegalStateException("Stops, Routes, or Busline table doesn't exist");
+            }
+
+            try {
+                Statement statement2 = connection.createStatement();
+                String sql1 = "SELECT * FROM Routes";
+                ResultSet rs = statement2.executeQuery(sql1);
+            } catch(SQLException e){
+                throw new IllegalStateException("Stops, Routes, or Busline table doesn't exist");
+            }
+
+            try {
+                Statement statement3 = connection.createStatement();
+                String sql1 = "SELECT * FROM BusLines";
+                ResultSet rs = statement3.executeQuery(sql1);
+            } catch(SQLException e){
+                throw new IllegalStateException("Stops, Routes, or Busline table doesn't exist");
+            }
+
+
+
+            String sql = "SELECT * FROM BusLines";
+            try {
+                ResultSet resultSet = statement.executeQuery(sql);
+                while (resultSet.next()) {
+                    int id = resultSet.getInt("ID");
+                    boolean isActive = resultSet.getBoolean("IsActive");
+                    String longName = resultSet.getString("LongName");
+                    String shortName = resultSet.getString("ShortName");
+                    BusLine busLine = new BusLine(id, isActive, longName, shortName);
+                    busLineList.add(busLine);
+
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+            return busLineList;
+        }catch(SQLException e){
+            throw new IllegalStateException(e);
         }
-        return busLineList;
     }
 
     @Override
@@ -442,45 +475,59 @@ public class DatabaseManagerImpl implements DatabaseManager {
          * @throws IllegalArgumentException if no BusLine with that id is found
          * @throws IllegalStateException if the Manager hasn't connected yet
          */
-        Statement statement = null;
-        try {
-            statement = connection.createStatement();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        String sql = String.format("SELECT * FROM BusLines WHERE ID = %d", id);
-        ResultSet resultSet = null;
-        try {
-            resultSet = statement.executeQuery(sql);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        try {
-            if (resultSet.next()) {
-                int busLineID = resultSet.getInt("ID");
-                boolean isActive = resultSet.getBoolean("IsActive");
-                String longName = resultSet.getString("LongName");
-                String shortName = resultSet.getString("ShortName");
-                //get the route from the ApiBusLineReader
-                String sql2 = String.format("SELECT * FROM Routes WHERE BusLineID = %d", busLineID);
-                ResultSet resultSet2 = statement.executeQuery(sql2);
-                //create a new Route object and add the stops to it
-                Route route = new Route();
-                List<Stop> routeList = new ArrayList<>();
-                while (resultSet2.next()) {
-                    //get the stops by calling getStopById
-                    int stopID = resultSet2.getInt("StopID");
-                    Stop stop = getStopByID(stopID);
-                    route.addStop(stop);
-                }
 
-                BusLine busLine = new BusLine(busLineID, isActive, longName, shortName, route);
-                return busLine;
-            } else {
-                throw new IllegalArgumentException("No BusLine with given id found");
+        try {
+            if (connection == null || connection.isClosed()) {
+                throw new IllegalStateException("The Manager hasn't connected yet");
             }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+
+            Statement statement = connection.createStatement();
+            String sql = String.format("SELECT * FROM BusLines WHERE ID = %d", id);
+            ResultSet resultSet = null;
+            resultSet = statement.executeQuery(sql);
+
+            ResultSet rs;
+            try {
+                Statement statement3 = connection.createStatement();
+                String sql1 = "SELECT * FROM BusLines";
+                rs = statement3.executeQuery(sql1);
+            } catch(SQLException e){
+                throw new IllegalStateException("BusLine doesn't exist");
+            }
+
+            if(rs.isClosed()){
+                throw new IllegalStateException("BusLine is empty");
+            }
+
+            try {
+                if (resultSet.next()) {
+                    int busLineID = resultSet.getInt("ID");
+                    boolean isActive = resultSet.getBoolean("IsActive");
+                    String longName = resultSet.getString("LongName");
+                    String shortName = resultSet.getString("ShortName");
+                    //get the route from the ApiBusLineReader
+                    String sql2 = String.format("SELECT * FROM Routes WHERE BusLineID = %d", busLineID);
+                    ResultSet resultSet2 = statement.executeQuery(sql2);
+                    //create a new Route object and add the stops to it
+                    Route route = new Route();
+                    List<Stop> routeList = new ArrayList<>();
+                    while (resultSet2.next()) {
+                        //get the stops by calling getStopById
+                        int stopID = resultSet2.getInt("StopID");
+                        Stop stop = getStopByID(stopID);
+                        route.addStop(stop);
+                    }
+
+                    BusLine busLine = new BusLine(busLineID, isActive, longName, shortName, route);
+                    return busLine;
+                } else {
+                    throw new IllegalArgumentException("No BusLine with given id found");
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        } catch(SQLException e){
+            throw new IllegalStateException(e);
         }
     }
 
@@ -617,7 +664,7 @@ public class DatabaseManagerImpl implements DatabaseManager {
          */
         //commit any changes
         try {
-            if (connection.isClosed()) {
+            if (connection == null || connection.isClosed()) {
                 throw new IllegalStateException("Manager hasn't connected yet");
             }
             connection.close();
