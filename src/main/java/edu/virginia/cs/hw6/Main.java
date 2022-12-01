@@ -17,13 +17,13 @@ public class Main {
         List<BusLine> busLineList = ablr.getBusLines();
         dbm.addBusLines(busLineList);
 
-//        List<Stop> allStops = dbm.getAllStops();
-//
-//        List<BusLine> allBusLines = dbm.getBusLines();
+        List<Stop> allStops = dbm.getAllStops();
+
+        List<BusLine> allBusLines = dbm.getBusLines();
 
 
-      //  Stop stop = dbm.getStopByID(4235106);
-        //System.out.println(stop);
+//        Stop stop = dbm.getStopByID(4235106);
+//        System.out.println(stop);
 
         //test getStopByName
 //        Stop stop = dbm.getStopByName("George Welsh Way @ Scott Stadium");
@@ -36,8 +36,8 @@ public class Main {
         //test getBusLineByLongName
 //        BusLine busLine = dbm.getBusLineByLongName("Buckingham East CONNECT");
 //        System.out.println(busLine);
-
-        //test getBusLinesByShortName
+//
+//       // test getBusLinesByShortName
 //        BusLine busLine = dbm.getBusLineByShortName("BUCK-N");
 //        System.out.println(busLine);
         dbm.disconnect();

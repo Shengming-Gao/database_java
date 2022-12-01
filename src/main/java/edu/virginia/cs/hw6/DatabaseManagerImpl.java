@@ -11,13 +11,14 @@ public class DatabaseManagerImpl implements DatabaseManager {
 
     @Override
     public void connect() {
-        /**
-         * Establishes the database connection. Must be called before any other
-         * methods are called.
-         *
-         * @throws IllegalStateException if the Manager is already connected
-         */
+
+        //throw IllegalStateException if the Manager is already connected
+        if (connection != null) {
+            throw new IllegalStateException("The Manager is already connected");
+        }
+
         try {
+
             Class.forName("org.sqlite.JDBC");
             connection = DriverManager.getConnection("jdbc:sqlite:" + DATABASE_PATH);
         } catch (ClassNotFoundException e) {
@@ -26,6 +27,7 @@ public class DatabaseManagerImpl implements DatabaseManager {
             throw new RuntimeException(e);
         }
     }
+
 
     /**
      * Creates the tables Stops, BusLines, and Routes in the database. Throws
@@ -59,6 +61,10 @@ public class DatabaseManagerImpl implements DatabaseManager {
             String BusLinesTable = "CREATE TABLE IF NOT EXISTS BusLines (ID int NOT NULL PRIMARY KEY, IsActive BOOLEAN NOT NULL, " +
                     "LongName VARCHAR(255) NOT NULL, ShortName VARCHAR(255) NOT NULL) ";
             Statement statement2 = connection.createStatement();
+//            statement2.executeUpdate(BusLinesTable);
+
+
+            //Statement statement2 = connection.createStatement();
             statement2.executeUpdate(BusLinesTable);
 
 
@@ -76,13 +82,12 @@ public class DatabaseManagerImpl implements DatabaseManager {
 //                    "FOREIGN KEY (BusLineID) REFERENCES BusLines(ID) ON DELETE CASCADE, " +
 //                    "FOREIGN KEY (StopID) REFERENCES Stops(ID) ON DELETE CASCADE)";
 
-            String RoutesTable = "CREATE TABLE IF NOT EXISTS Routes (ID int NOT NULL," +
+            String RoutesTable = "CREATE TABLE Routes (ID INTEGER PRIMARY KEY, " +
                     "BusLineID int NOT NULL," +
                     "StopID int NOT NULL," +
                     "\"Order\" int NOT NULL," +
                     "FOREIGN KEY (BusLineID) REFERENCES BusLines(ID) ON DELETE CASCADE," +
-                    "FOREIGN KEY (StopID) REFERENCES Stops(ID) ON DELETE CASCADE," +
-                    "PRIMARY KEY (ID))";
+                    "FOREIGN KEY (StopID) REFERENCES Stops(ID) ON DELETE CASCADE)";
 
 
             Statement statement3 = connection.createStatement();
@@ -309,6 +314,22 @@ public class DatabaseManagerImpl implements DatabaseManager {
 
     @Override
     public void addBusLines(List<BusLine> busLineList) {
+        /**
+         * Add each BusLine in busLineList to the database. This must be called
+         * only AFTER the Stops are added, as this will populate both the BusLines
+         * and Routes Table.
+         *
+         * @throws IllegalStateException if Stops table doesn't exist OR is empty
+         * @throws IllegalStateException if Routes and BusLines tables don't exist
+         * @throws IllegalArgumentException if adding a bus that already exists (i.e., has
+         * a matching ID with an existing bus).
+         * @throws IllegalArgumentException if adding a Stop to a bus's Route that doesn't
+         * exist already.
+         * @throws IllegalStateException if the Manager hasn't connected yet
+         */
+        if(connection == null || connection.isClosed() )  {
+            throw new IllegalStateException("Error: manager is not connected. ");
+        }
         for (BusLine busLine : busLineList) {
             String insertQuery = String.format("INSERT INTO BusLines (ID, IsActive, LongName, ShortName) " +
                             "VALUES (%d, %b, \"%s\", \"%s\")", busLine.getId(), busLine.isActive(), busLine.getLongName(),
@@ -330,13 +351,12 @@ public class DatabaseManagerImpl implements DatabaseManager {
 //        (100, stopC, 0), (100, stopA, 1), (100, stopB, 2)
         for (BusLine busLine : busLineList) {
             Route r = busLine.getRoute();
-
             //Using the get(int index) method of the Route class, get the stops in the order they are in the Route
             //and insert them into the Route table
             for (int i = 0; i < r.size(); i++) {
                 Stop stop = r.get(i);
                 String insertQuery = String.format("INSERT INTO Routes (ID, BusLineID, StopID,\"Order\") " +
-                                "VALUES (%d, %d, %d, %d)",count, busLine.getId(), stop.getId(), i);
+                                "VALUES (%d, %d, %d, %d)",null, busLine.getId(), stop.getId(), i);
                 Statement statement = null;
                 try {
                     statement = connection.createStatement();
@@ -346,9 +366,7 @@ public class DatabaseManagerImpl implements DatabaseManager {
                 }
                 count++;
             }
-
         }
-
     }
 
     @Override
