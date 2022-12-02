@@ -45,14 +45,14 @@ public class Route {
         return totalDistance;
     }
 
-    @Override
-    //call the toString method in Stop class to print the list of the stops in the routes
-    public String toString() {
-        String result = "";
-        for (Stop stop : stopList) {
-            result += stop.toString() + " ";
-
-        }
-        return result;
-    }
+//    @Override
+//    //call the toString method in Stop class to print the list of the stops in the routes
+//    public String toString() {
+//        String result = "";
+//        for (Stop stop : stopList) {
+//            result += stop.toString() + " ";
+//
+//        }
+//        return result;
+//    }
 }

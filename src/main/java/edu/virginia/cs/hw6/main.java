@@ -11,33 +11,33 @@ public class Main {
 //        dbm.createTables();
 
 //       dbm.createTables();
-//        dbm.deleteTables();
-//        dbm.createTables();
+        dbm.deleteTables();
+        dbm.createTables();
 
 //        dbm.clear();
 
 
-//        ApiStopReader asr = new ApiStopReader();
-//        List<Stop> stopList = asr.getStops();
-////        dbm.addStops(stopList);
+        ApiStopReader asr = new ApiStopReader();
+        List<Stop> stopList = asr.getStops();
 //        dbm.addStops(stopList);
+        dbm.addStops(stopList);
 
 
-//        ApiBusLineReader ablr = new ApiBusLineReader();
-//        List<BusLine> busLineList = ablr.getBusLines();
-//        dbm.addBusLines(busLineList);
+        ApiBusLineReader ablr = new ApiBusLineReader();
+        List<BusLine> busLineList = ablr.getBusLines();
+        dbm.addBusLines(busLineList);
 
  //       public void addBusLines(List<BusLine> busLineList) {
 
 //        4235108
 //        4235114
 
-        List<Stop> stopList1 = new ArrayList<>();
-        stopList1.add(new Stop(4235108, "Blah", 0, 0));
-        stopList1.add(new Stop(4235114, "ABC", 1, 1));
-        List<BusLine> busLineList1 = new ArrayList<>();
-        busLineList1.add(new BusLine(4013, true, "longName", "shortName", new Route(stopList1)));
-        dbm.addBusLines(busLineList1);
+//        List<Stop> stopList1 = new ArrayList<>();
+//        stopList1.add(new Stop(4235108, "Blah", 0, 0));
+//        stopList1.add(new Stop(4235114, "ABC", 1, 1));
+//        List<BusLine> busLineList1 = new ArrayList<>();
+//        busLineList1.add(new BusLine(4013, true, "longName", "shortName", new Route(stopList1)));
+//        dbm.addBusLines(busLineList1);
 
 
 //       List<Stop> allStops = dbm.getAllStops();

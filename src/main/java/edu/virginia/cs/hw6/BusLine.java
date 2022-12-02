@@ -80,14 +80,14 @@ public class BusLine {
         return id;
     }
 
-    @Override
-    public String toString() {
-        return "BusLine{" +
-                "id=" + id +
-                ", isActive=" + isActive +
-                ", longName='" + longName + '\'' +
-                ", route=" + route +
-                ", shortName='" + shortName + '\'' +
-                '}';
-    }
+//    @Override
+//    public String toString() {
+//        return "BusLine{" +
+//                "id=" + id +
+//                ", isActive=" + isActive +
+//                ", longName='" + longName + '\'' +
+//                ", route=" + route +
+//                ", shortName='" + shortName + '\'' +
+//                '}';
+//    }
 }
