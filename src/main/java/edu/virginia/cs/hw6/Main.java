@@ -1,5 +1,6 @@
 package edu.virginia.cs.hw6;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Main {
@@ -16,15 +17,25 @@ public class Main {
 //        dbm.clear();
 
 
-        ApiStopReader asr = new ApiStopReader();
-        List<Stop> stopList = asr.getStops();
-        dbm.addStops(stopList);
+//        ApiStopReader asr = new ApiStopReader();
+//        List<Stop> stopList = asr.getStops();
+//        dbm.addStops(stopList);
 //        dbm.addStops(stopList);
 
 //
-        ApiBusLineReader ablr = new ApiBusLineReader();
-        List<BusLine> busLineList = ablr.getBusLines();
-        dbm.addBusLines(busLineList);
+//        ApiBusLineReader ablr = new ApiBusLineReader();
+//        List<BusLine> busLineList = ablr.getBusLines();
+//        dbm.addBusLines(busLineList);
+
+ //       public void addBusLines(List<BusLine> busLineList) {
+
+        List<Stop> stopList1 = new ArrayList<>();
+        stopList1.add(new Stop(9999999, "Blah", 0, 0));
+        dbm.addStops(stopList1);
+        stopList1.add(new Stop(9999998, "ABC", 1, 1));
+        List<BusLine> busLineList1 = new ArrayList<>();
+        busLineList1.add(new BusLine(40134, true, null, null, new Route(stopList1)));
+        dbm.addBusLines(busLineList1);
 
 
 //       List<Stop> allStops = dbm.getAllStops();

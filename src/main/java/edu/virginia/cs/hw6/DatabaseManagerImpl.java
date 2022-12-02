@@ -399,7 +399,7 @@ public class DatabaseManagerImpl implements DatabaseManager {
 
             for (BusLine busLine : busLineList) {
                 //If adding a bus already exists and has a matching ID
-
+                //check if busLine.getRoute has non-existent stops
                 String sql2 = String.format("Select * from BusLines");
                 Statement statement3 = connection.createStatement();
                 ResultSet rs3 = statement3.executeQuery(sql2);
@@ -410,6 +410,7 @@ public class DatabaseManagerImpl implements DatabaseManager {
                        throw new IllegalArgumentException("adding a bus that already exists, same ID");
                    }
                 }
+
 
                  String insertQuery = String.format("INSERT INTO BusLines (ID, IsActive, LongName, ShortName) " +
                                 "VALUES (%d, %b, \"%s\", \"%s\")", busLine.getId(), busLine.isActive(), busLine.getLongName(),
@@ -427,8 +428,21 @@ public class DatabaseManagerImpl implements DatabaseManager {
                 Route r = busLine.getRoute();
                 //Using the get(int index) method of the Route class, get the stops in the order they are in the Route
                 //and insert them into the Route table
+
+
                 for (int i = 0; i < r.size(); i++) {
                     Stop stop = r.get(i);
+                    boolean No_Stop = false;
+                    int Stop_ID_Added = stop.getId();
+                    String sql2 = "select count(*) from Stops where ID=" + stop.getId() +";";
+                    Statement statement1 = connection.createStatement();
+                    ResultSet rs1 = statement1.executeQuery(sql2);
+                    if(rs1.getInt(1)==0){
+                       throw new IllegalArgumentException("adding a Stop to a bus's Route that doesn't\n" +
+                               "         * exist already.");
+                    }
+
+
 
                     String insertQuery = String.format("INSERT INTO Routes (ID, BusLineID, StopID,\"Order\") " +
                             "VALUES (%d, %d, %d, %d)", null, busLine.getId(), stop.getId(), i);
